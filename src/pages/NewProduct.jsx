@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { writeProductData } from "../api/firebase";
 import uploadCloudinary from "../api/uploadCloudinary";
 import Button from "../components/ui/Button";
@@ -16,21 +17,36 @@ export default function NewProduct() {
   const handleImgChange = (e) => {
     setFile(e.target.files[0]);
   };
+  const queryClient = useQueryClient();
+  const writeNewProductData = useMutation(
+    ({ productData, imgUrl }) => writeProductData({ ...productData, imgUrl }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["products"]);
+      },
+    }
+  );
+
   const handleSubmit = (e) => {
     setIsUploading(true);
     e.preventDefault();
-    uploadCloudinary(file).then((url) => {
-      writeProductData({ ...productData, imgUrl: url })
-        .then(() => {
-          setSuccess(true);
-          setTimeout(() => {
-            setSuccess(null);
-          }, 4000);
-        })
-        .finally(() => {
-          setIsUploading(null);
-        });
-    });
+    uploadCloudinary(file)
+      .then((url) => {
+        writeNewProductData.mutate(
+          { productData, imgUrl: url },
+          {
+            onSuccess: () => {
+              setSuccess(true);
+              setTimeout(() => {
+                setSuccess(null);
+              }, 4000);
+            },
+          }
+        );
+      })
+      .finally(() => {
+        setIsUploading(null);
+      });
   };
   const handleSuccess = () => {
     window.scrollTo(0, 0);

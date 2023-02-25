@@ -12,7 +12,10 @@ export function UserProvider({ children }) {
     });
   }, []);
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider
+      value={{ user, uid: user && user.uid, login, logout }}
+      // useEffect를 통해 user 업데이트, 업데이트 이전에는 user값이 없으므로 uid로 undefined 넘겨 줌.
+    >
       {children}
     </UserContext.Provider>
   );

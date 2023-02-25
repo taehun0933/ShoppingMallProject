@@ -1,14 +1,21 @@
 import React from "react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { addOrUpdateToCart } from "../api/firebase";
 import Button from "../components/ui/Button";
+import { useUserContext } from "../context/UserContext";
 
 export default function ProductDetail() {
-  const { category, image, price, title, description, options } =
+  const { uid } = useUserContext();
+  const { category, image, price, title, description, options, id } =
     useLocation().state;
   const [selected, setSelected] = useState(options && options[0]);
   const handleChange = (e) => {
     setSelected(e.target.value);
+  };
+  const handleClick = () => {
+    const product = { id, image, title, price, option: selected, quantity: 1 };
+    addOrUpdateToCart(uid, product);
   };
   return (
     <div className="flex flex-col md:flex-row">
@@ -40,7 +47,7 @@ export default function ProductDetail() {
               ))}
           </select>
         </div>
-        <Button text={"장바구니에 추가"} />
+        <Button text={"장바구니에 추가"} onClick={handleClick} />
       </section>
     </div>
   );

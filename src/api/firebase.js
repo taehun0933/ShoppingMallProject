@@ -6,7 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getDatabase, ref, child, get, set } from "firebase/database";
+import { getDatabase, ref, child, get, set, remove } from "firebase/database";
 import { setLocalStorageUser } from "./localStorageUser";
 import { v4 } from "uuid";
 
@@ -81,4 +81,19 @@ export async function getProductsData() {
       return [];
     }
   });
+}
+
+export async function getCart(userId) {
+  return get(ref(getDatabase(), `carts/${userId}`)).then((snapshot) => {
+    const items = snapshot.val() || {};
+    return Object.values(items);
+  });
+}
+
+export async function addOrUpdateToCart(userId, product) {
+  return set(ref(getDatabase(), `carts/${userId}/${product.id}`), product);
+}
+
+export async function removeFromCart(userId, productId) {
+  return remove(ref(getDatabase(), `carts/${userId}/${productId}`));
 }
