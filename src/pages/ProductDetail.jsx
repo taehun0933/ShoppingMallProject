@@ -1,21 +1,29 @@
 import React from "react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { addOrUpdateToCart } from "../api/firebase";
+import useProductUpdate from "../components/hooks/useProductUpdate";
 import Button from "../components/ui/Button";
-import { useUserContext } from "../context/UserContext";
 
 export default function ProductDetail() {
-  const { uid } = useUserContext();
   const { category, image, price, title, description, options, id } =
     useLocation().state;
   const [selected, setSelected] = useState(options && options[0]);
+  const [success, setSuccess] = useState();
+
   const handleChange = (e) => {
     setSelected(e.target.value);
   };
+  const { updateToCart } = useProductUpdate();
   const handleClick = () => {
     const product = { id, image, title, price, option: selected, quantity: 1 };
-    addOrUpdateToCart(uid, product);
+    updateToCart.mutate(product, {
+      onSuccess: () => {
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess();
+        }, 3000);
+      },
+    });
   };
   return (
     <div className="flex flex-col md:flex-row">
@@ -47,6 +55,7 @@ export default function ProductDetail() {
               ))}
           </select>
         </div>
+        {success && <p className="mb-3">✅ 성공적으로 추가되었습니다!</p>}
         <Button text={"장바구니에 추가"} onClick={handleClick} />
       </section>
     </div>

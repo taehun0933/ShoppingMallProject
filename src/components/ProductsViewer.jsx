@@ -1,12 +1,11 @@
 import React from "react";
-import { useQuery } from "react-query";
-import { getProductsData } from "../api/firebase";
+import useProduct from "./hooks/useProduct";
 import ProductCard from "./ProductCard";
 
 export default function ProductsViewer() {
-  const { data, isLoading, error } = useQuery(["products"], getProductsData, {
-    staleTime: 1000 * 60,
-  });
+  const {
+    useProductQuery: { data, isLoading, error },
+  } = useProduct();
 
   if (isLoading) return <>로딩중...</>;
   if (error) return <>{error}</>;

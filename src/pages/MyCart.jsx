@@ -1,18 +1,17 @@
 import React from "react";
-import { useQuery } from "react-query";
-import { getCart } from "../api/firebase";
 import CartItem from "../components/CartItem";
 import { useUserContext } from "../context/UserContext";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { FaEquals } from "react-icons/fa";
 import PriceCard from "../components/ui/PriceCard";
 import Button from "../components/ui/Button";
+import useProductUpdate from "../components/hooks/useProductUpdate";
 
 export default function MyCart() {
   const { uid } = useUserContext();
-
-  const { data: products, isLoading } = useQuery(["carts"], () => getCart(uid));
-  // 현재 문제 : 실시간 동기화 안됨(useQuery는 데이터가 변경되었을 때가 아닌, windowRefocus 등등에 refetch가 발생하기 때문)
+  const {
+    useCartQuery: { data: products, isLoading },
+  } = useProductUpdate();
 
   if (isLoading) return <>로딩중...</>;
 

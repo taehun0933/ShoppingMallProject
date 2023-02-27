@@ -1,8 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { writeProductData } from "../api/firebase";
 import uploadCloudinary from "../api/uploadCloudinary";
+import useProduct from "../components/hooks/useProduct";
 import Button from "../components/ui/Button";
 import ProductInput from "../components/ui/ProductInput";
 
@@ -17,15 +16,7 @@ export default function NewProduct() {
   const handleImgChange = (e) => {
     setFile(e.target.files[0]);
   };
-  const queryClient = useQueryClient();
-  const writeNewProductData = useMutation(
-    ({ productData, imgUrl }) => writeProductData({ ...productData, imgUrl }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["products"]);
-      },
-    }
-  );
+  const { writeNewProductData } = useProduct();
 
   const handleSubmit = (e) => {
     setIsUploading(true);
